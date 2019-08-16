@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import Business from '../business';
 import { BusinessService } from '../business.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd, Event } from '@angular/router';
 
 @Component({
   selector: 'app-gst-get',
@@ -13,11 +13,23 @@ export class GstGetComponent implements OnInit {
   businesses: Business[];
   constructor(private bs: BusinessService, private router: Router) { }
 
-  ngOnInit() {
+  getDBStuff() {
     this.bs.getBusinesses().subscribe((data: Business[]) => {
       this.businesses = data;
     });
   }
+
+  ngOnInit() {
+    this.router.events.subscribe( (event: Event) => {
+          if (event instanceof NavigationEnd) {
+              this.getDBStuff();
+          }
+      });
+
+
+    this.getDBStuff();
+  }
+
 
 
   deleteBusiness(id) {
